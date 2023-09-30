@@ -20,12 +20,18 @@ class Car {
     }
     this.controls = new Controls(controlType);
 
-    this.img = new Image();
-    this.img.src = "car.png";
+        
+        this.img=new Image();
+        
+        if (controlType != "PERSON") {
+            this.img.src = "car.png"
+        } else {
+            this.img.src = "person.png";
+        }
 
-    this.mask = document.createElement("canvas");
-    this.mask.width = width;
-    this.mask.height = height;
+        this.mask=document.createElement("canvas");
+        this.mask.width=width;
+        this.mask.height=height;
 
     const maskCtx = this.mask.getContext("2d");
     this.img.onload = () => {
@@ -34,7 +40,9 @@ class Car {
       maskCtx.fill();
 
       maskCtx.globalCompositeOperation = "destination-atop";
+
       maskCtx.drawImage(this.img, 0, 0, this.width, this.height);
+
     };
   }
 

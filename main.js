@@ -1,6 +1,25 @@
+<<<<<<< HEAD
+const MOD = 700;
+let idx = -1;
+let row_data = [];
+let traffic = [];
+
+fetch('development_data.json')
+.then(response => response.json())
+.then(data => {
+  row_data = data;
+  animate();
+})
+.catch(error => {
+  console.error('Error:', error);
+});
+
+
+=======
 // Trained demo
 
 // {"levels":[{"inputs":[0,0,0,0.7129208604216236,0.844633889226857],"outputs":[0,1,0,0,0,0],"biases":[0.36305218254413196,-0.2791670414264066,0.4275719993903899,0.4027458214192947,-0.1648425455618889,0.7084421730524109],"weights":[[0.3099786471233225,-0.3915812303206001,0.30590022536932193,0.67631166972877,-0.40093357966710313,0.4776540054623362],[-0.1300940341672106,0.25599629146942315,0.5962190754371645,-0.6025871227165938,0.5688570403446533,0.5798153686386649],[-0.019827395911881512,-0.39025613767290446,-0.3322073137425033,-0.2794871585314656,-0.39950245876287893,0.6604811197924],[-0.6026384035174138,-0.4830377279362584,0.06482137404789662,-0.16471884655217137,-0.768131765421022,-0.594662449274259],[-0.12069418023377829,0.08732687240685152,-0.7621459227593416,-0.4414718016093638,-0.3608969399307149,-0.45086201465107245]]},{"inputs":[0,1,0,0,0,0],"outputs":[1,1,1,0],"biases":[-0.6000476107381317,-0.5739339900967068,0.010620722687706939,0.4275676132718233],"weights":[[0.4512893425058352,0.13357256080778102,0.8456264813112793,-0.36799149894740196],[0.04920798283982766,0.5459048469143315,0.684432764064606,-0.4688219880645502],[-0.8004523350794828,-0.5609857160829502,0.5064092973244019,-0.20586692052996036],[-0.6829858151500844,-0.2712646619433167,-0.5900683300757498,0.8290350606055005],[0.6641896165367301,-0.6323434548016649,0.6242894800654318,0.21370081956492093],[-0.5915991310846063,-0.47612192458473507,-0.01466000791721321,-0.6241154075452968]]}]}
+>>>>>>> main
 
 const carCanvas = document.getElementById("carCanvas");
 carCanvas.width = 200;
@@ -24,17 +43,39 @@ if (localStorage.getItem("bestBrain")) {
   }
 }
 
-const traffic = [
-  new Car(road.getLaneCenter(1), -100, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(0), -300, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(2), -300, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(0), -500, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(1), -500, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(1), -700, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(2), -700, 30, 50, "DUMMY", 2, getRandomColor()),
-];
+function getLaneConverter(lane) {
+  return (lane) => {
+    if (lane => 0 && lane <= 3000) {
+      return 1;
+    } else if (lane >3000 && lane <= 6000) {
+      return 0;
+    } else {
+      return 2;
+    }
+  }
+}
+function getTraffic(state) {
+  traffic = [];
+  traffic.push(
+    new Car(road.getLaneCenter(0), -(Math.abs(state.FirstObjectDistance_Y % MOD)), 30, 50, "DUMMY", 3, getRandomColor()),
+    new Car(road.getLaneCenter(1), -(Math.abs(state.SecondObjectDistance_Y % MOD)), 30, 50, "PERSON", 2, "white"),
+    new Car(road.getLaneCenter(2), -(Math.abs(state.ThirdObjectDistance_Y % MOD)), 30, 50, "DUMMY", 2, getRandomColor()),
+    new Car(road.getLaneCenter(2), -(Math.abs(state.FourthObjectDistance_Y % MOD)), 30, 50, "DUMMY", 2, getRandomColor()),
+  )
+  return traffic;
+}
 
-animate();
+// const traffic = [
+//   // x, y, width, height, color
+//   new Car(road.getLaneCenter(1), -100, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(0), -300, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(2), -300, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(0), -500, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(1), -500, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(1), -700, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(2), -700, 30, 50, "DUMMY", 2, getRandomColor()),
+// ];
+
 
 function save() {
   localStorage.setItem("bestBrain", JSON.stringify(bestCar.brain));
@@ -52,7 +93,21 @@ function generateCars(N) {
   return cars;
 }
 
+function processData(row_data) {
+  current_state = row_data[0];
+  next_state = row_data[1];
+  current_timestamp = current_state.Timestamp;
+  animate(null, row_data, 0);
+}
+
 function animate(time) {
+  if (idx == -1) {
+    idx = 40; //+(prompt("Enter the state number"));
+    const current_state = row_data[idx];
+    traffic = getTraffic(current_state);
+    console.log(traffic);
+  }
+
   for (let i = 0; i < traffic.length; i++) {
     traffic[i].update(road.borders, []);
   }
