@@ -1,3 +1,20 @@
+const MOD = 700;
+let idx = -1;
+let row_data = [];
+let traffic = [];
+
+fetch('development_data.json')
+.then(response => response.json())
+.then(data => {
+  row_data = data;
+  animate();
+})
+.catch(error => {
+  console.error('Error:', error);
+});
+
+
+
 const carCanvas = document.getElementById("carCanvas");
 carCanvas.width = 200;
 const networkCanvas = document.getElementById("networkCanvas");
@@ -8,7 +25,7 @@ const networkCtx = networkCanvas.getContext("2d");
 
 const road = new Road(carCanvas.width / 2, carCanvas.width * 0.9);
 
-const N = 200;
+const N = 1;
 const cars = generateCars(N);
 let bestCar = cars[0];
 if (localStorage.getItem("bestBrain")) {
@@ -20,17 +37,39 @@ if (localStorage.getItem("bestBrain")) {
   }
 }
 
-const traffic = [
-  new Car(road.getLaneCenter(1), -100, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(0), -300, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(2), -300, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(0), -500, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(1), -500, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(1), -700, 30, 50, "DUMMY", 2, getRandomColor()),
-  new Car(road.getLaneCenter(2), -700, 30, 50, "DUMMY", 2, getRandomColor()),
-];
+function getLaneConverter(lane) {
+  return (lane) => {
+    if (lane => 0 && lane <= 3000) {
+      return 1;
+    } else if (lane >3000 && lane <= 6000) {
+      return 0;
+    } else {
+      return 2;
+    }
+  }
+}
+function getTraffic(state) {
+  traffic = [];
+  traffic.push(
+    new Car(road.getLaneCenter(0), -(Math.abs(state.FirstObjectDistance_Y % MOD)), 30, 50, "DUMMY", 3, getRandomColor()),
+    new Car(road.getLaneCenter(1), -(Math.abs(state.SecondObjectDistance_Y % MOD)), 30, 50, "DUMMY", 2, getRandomColor()),
+    new Car(road.getLaneCenter(2), -(Math.abs(state.ThirdObjectDistance_Y % MOD)), 30, 50, "DUMMY", 1, getRandomColor()),
+    new Car(road.getLaneCenter(2), -(Math.abs(state.FourthObjectDistance_Y % MOD)), 30, 50, "DUMMY", 4, getRandomColor()),
+  )
+  return traffic;
+}
 
-animate();
+// const traffic = [
+//   // x, y, width, height, color
+//   new Car(road.getLaneCenter(1), -100, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(0), -300, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(2), -300, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(0), -500, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(1), -500, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(1), -700, 30, 50, "DUMMY", 2, getRandomColor()),
+//   new Car(road.getLaneCenter(2), -700, 30, 50, "DUMMY", 2, getRandomColor()),
+// ];
+
 
 function save() {
   localStorage.setItem("bestBrain", JSON.stringify(bestCar.brain));
@@ -48,7 +87,21 @@ function generateCars(N) {
   return cars;
 }
 
+function processData(row_data) {
+  current_state = row_data[0];
+  next_state = row_data[1];
+  current_timestamp = current_state.Timestamp;
+  animate(null, row_data, 0);
+}
+
 function animate(time) {
+  if (idx == -1) {
+    idx = +(prompt("Enter the state number"));
+    const current_state = row_data[idx];
+    traffic = getTraffic(current_state);
+    console.log(traffic);
+  }
+
   for (let i = 0; i < traffic.length; i++) {
     traffic[i].update(road.borders, []);
   }
