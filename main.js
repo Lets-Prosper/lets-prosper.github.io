@@ -97,8 +97,9 @@ function processData(row_data) {
   current_state = row_data[0];
   next_state = row_data[1];
   current_timestamp = current_state.Timestamp;
+  animate();
   while (next_state != null) {
-    current_timestamp += 1;
+    current_timestamp += 100;
     if (current_timestamp >= next_state.Timestamp) {
       animate();
       current_state = next_state;
