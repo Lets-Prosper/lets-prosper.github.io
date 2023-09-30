@@ -25,7 +25,7 @@ const networkCtx = networkCanvas.getContext("2d");
 
 const road = new Road(carCanvas.width / 2, carCanvas.width * 0.9);
 
-const N = 1;
+const N = 100;
 const cars = generateCars(N);
 let bestCar = cars[0];
 if (localStorage.getItem("bestBrain")) {
@@ -53,8 +53,8 @@ function getTraffic(state) {
   traffic.push(
     new Car(road.getLaneCenter(0), -(Math.abs(state.FirstObjectDistance_Y % MOD)), 30, 50, "DUMMY", 3, getRandomColor()),
     new Car(road.getLaneCenter(1), -(Math.abs(state.SecondObjectDistance_Y % MOD)), 30, 50, "DUMMY", 2, getRandomColor()),
-    new Car(road.getLaneCenter(2), -(Math.abs(state.ThirdObjectDistance_Y % MOD)), 30, 50, "DUMMY", 1, getRandomColor()),
-    new Car(road.getLaneCenter(2), -(Math.abs(state.FourthObjectDistance_Y % MOD)), 30, 50, "DUMMY", 4, getRandomColor()),
+    new Car(road.getLaneCenter(2), -(Math.abs(state.ThirdObjectDistance_Y % MOD)), 30, 50, "DUMMY", 2, getRandomColor()),
+    new Car(road.getLaneCenter(2), -(Math.abs(state.FourthObjectDistance_Y % MOD)), 30, 50, "DUMMY", 2, getRandomColor()),
   )
   return traffic;
 }
@@ -96,7 +96,7 @@ function processData(row_data) {
 
 function animate(time) {
   if (idx == -1) {
-    idx = +(prompt("Enter the state number"));
+    idx = 40; //+(prompt("Enter the state number"));
     const current_state = row_data[idx];
     traffic = getTraffic(current_state);
     console.log(traffic);
