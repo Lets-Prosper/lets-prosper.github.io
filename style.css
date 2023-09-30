@@ -1,18 +1,18 @@
 body{
     margin:0;
-    background:darkgray;
+    background:#189b1f;
     overflow:hidden;
     display:flex;
-    justify-content:center;
+    justify-content:space-around;
     align-items:center;
 }
-
 #verticalButtons{
     display:flex;
     flex-direction:column;
+    justify-content:center;
 }
-
 button{
+    display: none;
     border: none;
     border-radius: 5px;
     padding: 5px 5px 7px 5px;
@@ -22,10 +22,10 @@ button{
 button:hover{
     background:blue;
 }
-
 #networkCanvas{
+    display: none;
     background:black;
 }
 #carCanvas{
-    background:lightgray;
+    background:#212121;
 }
