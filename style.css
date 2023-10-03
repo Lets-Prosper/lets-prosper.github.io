@@ -6,11 +6,13 @@ body{
     justify-content:space-around;
     align-items:center;
 }
+
 #verticalButtons{
     display:flex;
     flex-direction:column;
     justify-content:center;
 }
+
 button{
     display: none;
     border: none;
@@ -22,6 +24,7 @@ button{
 button:hover{
     background:blue;
 }
+
 #networkCanvas{
     display: none;
     background:black;
